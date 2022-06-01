@@ -1837,7 +1837,7 @@ public class DatanodeManager {
     if (totalBlocks > 0) {
       int maxTransfers = 0;
       if (nodeinfo.isDecommissionInProgress()) {
-        maxTransfers = blockManager.getMaxEcStreams()
+        maxTransfers = blockManager.getMaxDecommissionStreams()
             - xmitsInProgress;
       } else {
         maxTransfers = blockManager.getMaxReplicationStreams()
