@@ -1026,11 +1026,6 @@ public class TestDatanodeManager {
         new int[]{numReplicationTasks, numECTasks})
         .filter(x -> x > 0)
         .count();
-    LOG.warn("czq123 verifyPendingRecoveryTasks expectedNumCmds:{}, cmds:{}", expectedNumCmds, cmds.length);
-    if (isDecommissioning) {
-      LOG.warn("czq123 isd verifyPendingRecoveryTasks expectedNumCmds:{}, cmds:{}", expectedNumCmds, cmds.length);
-//      assertEquals(expectedNumCmds, cmds.length);
-    }
     assertEquals(expectedNumCmds, cmds.length);
 
     int idx = 0;
@@ -1061,7 +1056,7 @@ public class TestDatanodeManager {
 
     // Approximately load tasks if the ratio between queue length is large.
     verifyPendingRecoveryTasks(400, 1, 20, 30, 20, 1, false);
-    verifyPendingRecoveryTasks(30, 30, 20, 30, 15, 15, true);
+    verifyPendingRecoveryTasks(30, 30, 20, 30, 15, 15, false);
   }
 
   @Test

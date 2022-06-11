@@ -1839,11 +1839,9 @@ public class DatanodeManager {
       if (nodeinfo.isDecommissionInProgress()) {
         maxTransfers = blockManager.getReplicationStreamsHardLimit()
             - xmitsInProgress;
-        LOG.warn("czq123 handleHeartbeat 111, maxTransfers:{}", maxTransfers);
       } else {
         maxTransfers = blockManager.getMaxReplicationStreams()
             - xmitsInProgress;
-        LOG.warn("czq123 handleHeartbeat 222, maxTransfers:{}", maxTransfers);
       }
       int numReplicationTasks = (int) Math.ceil(
           (double) (totalReplicateBlocks * maxTransfers) / totalBlocks);
