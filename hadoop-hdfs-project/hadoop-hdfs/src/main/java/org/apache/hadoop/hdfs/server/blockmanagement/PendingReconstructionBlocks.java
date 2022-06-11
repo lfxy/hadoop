@@ -140,7 +140,8 @@ class PendingReconstructionBlocks {
    */
   PendingBlockInfo remove(BlockInfo block) {
     synchronized (pendingReconstructions) {
-      if (pendingReconstructions.get(block) !=  null) {
+      PendingBlockInfo found = pendingReconstructions.get(block);
+      if (found !=  null && found.getNumReplicas() > 0) {
         if (block.isStriped()) {
           ecPendingNum--;
         } else {
