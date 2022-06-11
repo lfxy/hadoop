@@ -975,18 +975,21 @@ public class TestDatanodeManager {
    */
   private void verifyPendingRecoveryTasks(
       int numReplicationBlocks, int numECBlocks,
-      int maxTransfers, int numReplicationTasks, int numECTasks)
+      int maxTransfers, int maxTransfersHardLimit,
+      int numReplicationTasks, int numECTasks, boolean isDecommissioning)
       throws IOException {
     FSNamesystem fsn = Mockito.mock(FSNamesystem.class);
     Mockito.when(fsn.hasWriteLock()).thenReturn(true);
     Configuration conf = new Configuration();
     conf.setInt(DFSConfigKeys.DFS_NAMENODE_REPLICATION_MAX_STREAMS_KEY, maxTransfers);
+    conf.setInt(DFSConfigKeys.DFS_NAMENODE_REPLICATION_STREAMS_HARD_LIMIT_KEY, maxTransfersHardLimit);
     DatanodeManager dm = Mockito.spy(mockDatanodeManager(fsn, conf));
 
     DatanodeDescriptor nodeInfo = Mockito.mock(DatanodeDescriptor.class);
     Mockito.when(nodeInfo.isRegistered()).thenReturn(true);
     Mockito.when(nodeInfo.getStorageInfos())
         .thenReturn(new DatanodeStorageInfo[0]);
+    Mockito.when(nodeInfo.isDecommissionInProgress()).thenReturn(isDecommissioning);
 
     if (numReplicationBlocks > 0) {
       Mockito.when(nodeInfo.getNumberOfReplicateBlocks())
@@ -1020,6 +1023,11 @@ public class TestDatanodeManager {
         new int[]{numReplicationTasks, numECTasks})
         .filter(x -> x > 0)
         .count();
+    LOG.warn("czq123 verifyPendingRecoveryTasks expectedNumCmds:{}, cmds:{}", expectedNumCmds, cmds.length);
+    if (isDecommissioning) {
+      LOG.warn("czq123 isd verifyPendingRecoveryTasks expectedNumCmds:{}, cmds:{}", expectedNumCmds, cmds.length);
+//      assertEquals(expectedNumCmds, cmds.length);
+    }
     assertEquals(expectedNumCmds, cmds.length);
 
     int idx = 0;
@@ -1045,11 +1053,12 @@ public class TestDatanodeManager {
   @Test
   public void testPendingRecoveryTasks() throws IOException {
     // Tasks are slitted according to the ratio between queue lengths.
-    verifyPendingRecoveryTasks(20, 20, 20, 10, 10);
-    verifyPendingRecoveryTasks(40, 10, 20, 16, 4);
+    verifyPendingRecoveryTasks(20, 20, 20, 30, 10, 10, false);
+    verifyPendingRecoveryTasks(40, 10, 20, 30, 16, 4, false);
 
     // Approximately load tasks if the ratio between queue length is large.
-    verifyPendingRecoveryTasks(400, 1, 20, 20, 1);
+    verifyPendingRecoveryTasks(400, 1, 20, 30, 20, 1, false);
+    verifyPendingRecoveryTasks(30, 30, 20, 30, 15, 15, true);
   }
 
   @Test
