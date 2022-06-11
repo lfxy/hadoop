@@ -140,10 +140,12 @@ class PendingReconstructionBlocks {
    */
   PendingBlockInfo remove(BlockInfo block) {
     synchronized (pendingReconstructions) {
-      if (block.isStriped()) {
-        ecPendingNum--;
-      } else {
-        replicatedPendingNum--;
+      if (pendingReconstructions.get(block) !=  null) {
+        if (block.isStriped()) {
+          ecPendingNum--;
+        } else {
+          replicatedPendingNum--;
+        }
       }
       return pendingReconstructions.remove(block);
     }
@@ -158,6 +160,8 @@ class PendingReconstructionBlocks {
       timedOutCount = 0L;
       ecPendingNum = 0L;
       replicatedPendingNum = 0L;
+      replicatedTimedOutNum = 0L;
+      ecTimedOutNum = 0L;
     }
   }
 
