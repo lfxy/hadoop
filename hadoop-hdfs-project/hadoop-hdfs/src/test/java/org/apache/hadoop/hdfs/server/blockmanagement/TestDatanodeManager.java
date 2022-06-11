@@ -88,6 +88,8 @@ public class TestDatanodeManager {
     BlockManager bm = Mockito.mock(BlockManager.class);
     Mockito.when(bm.getMaxReplicationStreams()).thenReturn(
         conf.getInt(DFSConfigKeys.DFS_NAMENODE_REPLICATION_MAX_STREAMS_KEY, 2));
+    Mockito.when(bm.getReplicationStreamsHardLimit()).thenReturn(
+        conf.getInt(DFSConfigKeys.DFS_NAMENODE_REPLICATION_STREAMS_HARD_LIMIT_KEY, 2));
     BlockReportLeaseManager blm = new BlockReportLeaseManager(conf);
     Mockito.when(bm.getBlockReportLeaseManager()).thenReturn(blm);
     DatanodeManager dm = new DatanodeManager(bm, fsn, conf);
@@ -989,7 +991,8 @@ public class TestDatanodeManager {
     Mockito.when(nodeInfo.isRegistered()).thenReturn(true);
     Mockito.when(nodeInfo.getStorageInfos())
         .thenReturn(new DatanodeStorageInfo[0]);
-    Mockito.when(nodeInfo.isDecommissionInProgress()).thenReturn(isDecommissioning);
+    Mockito.when(nodeInfo.isDecommissionInProgress())
+        .thenReturn(isDecommissioning);
 
     if (numReplicationBlocks > 0) {
       Mockito.when(nodeInfo.getNumberOfReplicateBlocks())
